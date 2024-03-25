@@ -5,34 +5,40 @@ import itertools
 import json
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+from prompt import *
 
 
-model = AutoModelForCausalLM.from_pretrained(
-    "universitytehran/PersianMind-v1.0",
-    torch_dtype=torch.bfloat16,
-    device_map="auto"
-)
-
-tokenizer = AutoTokenizer.from_pretrained(
-    "universitytehran/PersianMind-v1.0",
-)
+def post_process(row):
+    return ''.join(row.split('جواب:')[1:])
 
 
+def eval_persianmind(df, prompt_type=0, load_cache=False):
+    if not load_cache:
+        model = AutoModelForCausalLM.from_pretrained(
+            "universitytehran/PersianMind-v1.0",
+            torch_dtype=torch.bfloat16,
+            device_map="auto"
+        )
 
-def eval_persianmind(df, prompt_type=0):
+        tokenizer = AutoTokenizer.from_pretrained(
+            "universitytehran/PersianMind-v1.0",
+        )
+
     results = []
-    prompt_type = prompt_type
-    cache_dir = os.listdir('cache')
+    cache = f'cache/persianmind_{prompt_type}'
+    cache_dir = os.listdir(cache)
+    
     for _, i in tqdm(df.iterrows()):
         
         if f"persianmind_{prompt_type}_{i['ID']}_prompt.txt" in cache_dir and f"persianmind_{prompt_type}_{i['ID']}_str.txt" in cache_dir and f"persianmind_{prompt_type}_{i['ID']}_prob.json" in cache_dir:
-            with open(os.path.join('cache', f"persianmind_{prompt_type}_{i['ID']}_prompt.txt"), 'r', encoding='utf-8') as f:
+            with open(os.path.join(cache, f"persianmind_{prompt_type}_{i['ID']}_prompt.txt"), 'r', encoding='utf-8') as f:
                 prompt = f.read()
-            with open(os.path.join('cache', f"persianmind_{prompt_type}_{i['ID']}_str.txt"), 'r', encoding='utf-8') as f:
+            with open(os.path.join(cache, f"persianmind_{prompt_type}_{i['ID']}_str.txt"), 'r', encoding='utf-8') as f:
                 outputs = f.read()
-            results.append([prompt, outputs, i['ID'], 'persianmind'])
+            outputs = post_process(outputs)
+            results.append([prompt, outputs, i['ID'], f"{cache}/persianmind_{prompt_type}_{i['ID']}_prob.json", 'persianmind'])
 
-        else:
+        elif not load_cache:
             prompt = generate_prompt(i)
             TEMPLATE = "{context}\nYou: {prompt}\nPersianMind: "
             CONTEXT = "This is a conversation with PersianMind. It is an artificial intelligence model designed by a team of " \
@@ -62,22 +68,27 @@ def eval_persianmind(df, prompt_type=0):
 
             out_str = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True, clean_up_tokenization_spaces=False)
             
-            with open(os.path.join('cache', f"persianmind_{prompt_type}_{i['ID']}_prompt.txt"), 'w', encoding="utf-8") as f:
+            with open(os.path.join(cache, f"persianmind_{prompt_type}_{i['ID']}_prompt.txt"), 'w', encoding="utf-8") as f:
                 f.write(prompt)
 
-            with open(os.path.join('cache', f"persianmind_{prompt_type}_{i['ID']}_str.txt"), 'w', encoding="utf-8") as f:
+            with open(os.path.join(cache, f"persianmind_{prompt_type}_{i['ID']}_str.txt"), 'w', encoding="utf-8") as f:
                 f.write(out_str)
 
-            with open(os.path.join('cache', f"persianmind_{prompt_type}_{i['ID']}_prob.json"), 'w', encoding='utf-8') as f:
+            with open(os.path.join(cache, f"persianmind_{prompt_type}_{i['ID']}_prob.json"), 'w', encoding='utf-8') as f:
                 json.dump(prob_dict, f, ensure_ascii=False, indent=4)
 
-            results.append([prompt, out_str, i['ID'], 'persianmind'])
+            out_str = post_process(out_str)
+            results.append([prompt, out_str, i['ID'], f"{cache}/persianmind_{prompt_type}_{i['ID']}_prob.json", 'persianmind'])
+        else:
+            print('error')
+    pd.DataFrame(results, columns=['prompt', 'response_str', 'ID', 'prob_addr', 'model']).to_csv(f"cache/persianmind_{prompt_type}.csv")
     return results
+
 import pandas as pd
 
 torch.backends.cuda.enable_mem_efficient_sdp(False)
 torch.backends.cuda.enable_flash_sdp(False)
 
-df = pd.read_csv('/kaggle/input/mplumplu/MPLU_text.csv')
+df = pd.read_csv('MPLU_text.csv')
 
-res = eval_persianmind(df)
+res = eval_persianmind(df, load_cache=True)

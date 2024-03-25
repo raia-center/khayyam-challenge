@@ -14,7 +14,7 @@ def post_process(row):
 
 def eval_xverse(df, prompt_type=0, load_cache=False):
     if not load_cache:
-        model_path = "xverse/XVERSE-13B-Chat"
+        model_path = "xverse/XVERSE-7B-Chat"
         tokenizer = AutoTokenizer.from_pretrained(model_path)
         model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.bfloat16, device_map='auto')
 
@@ -30,7 +30,7 @@ def eval_xverse(df, prompt_type=0, load_cache=False):
         transformers_versio="4.29.1")
 
     results = []
-    cache = f'cache/xverse13b_{prompt_type}'
+    cache = f'cache/xverse7b_{prompt_type}'
     cache_dir = os.listdir(cache)
     
     for _, i in tqdm(df.iterrows()):
@@ -41,7 +41,7 @@ def eval_xverse(df, prompt_type=0, load_cache=False):
             with open(os.path.join(cache, f"xverse_{prompt_type}_{i['ID']}_str.txt"), 'r', encoding='utf-8') as f:
                 outputs = f.read()
             outputs = post_process(outputs)
-            results.append([prompt, outputs, i['ID'], f"{cache}/xverse_{prompt_type}_{i['ID']}_prob.json", 'xverse13b'])
+            results.append([prompt, outputs, i['ID'], f"{cache}/xverse_{prompt_type}_{i['ID']}_prob.json", 'xverse7b'])
 
         elif not load_cache:
             prompt = generate_prompt(i)
@@ -74,12 +74,12 @@ def eval_xverse(df, prompt_type=0, load_cache=False):
 
             with open(os.path.join(cache, f"xverse_{prompt_type}_{i['ID']}_prob.json"), 'w', encoding='utf-8') as f:
                 json.dump(prob_dict, f, ensure_ascii=False, indent=4)
-            
+
             out_str = post_process(out_str)
-            results.append([prompt, out_str, i['ID'], f"{cache}/xverse_{prompt_type}_{i['ID']}_prob.json", 'xverse13b'])
+            results.append([prompt, out_str, i['ID'], f"{cache}/xverse_{prompt_type}_{i['ID']}_prob.json", 'xverse7b'])
         else:
             print('error')
-    pd.DataFrame(results, columns=['prompt', 'response_str', 'ID', 'prob_addr', 'model']).to_csv(f"cache/xverse13b_{prompt_type}.csv")
+    pd.DataFrame(results, columns=['prompt', 'response_str', 'ID', 'prob_addr', 'model']).to_csv(f"cache/xverse7b_{prompt_type}.csv")
 
     return results
 

@@ -2,8 +2,6 @@ import random
 import string
 
 def random_str():
-#   characters = string.ascii_letters + string.digits + string.punctuation
-#   characters = string.ascii_letters + string.digits + '!#&?@^_!#&?@^_!#&?@^_!#&?@^_'
   characters = string.ascii_letters + string.digits
   random_string = ''.join(random.choice(characters) for _ in range(6))
 
