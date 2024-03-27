@@ -11,7 +11,9 @@ def random_str():
 def create_choices(list_):
     return list_[0]+", "+list_[1]+", "+list_[2]+", "+list_[3]
 
-def generate_prompt(row, mode=0, CoT=False, just_calibration=False, df_context=None):
+def generate_prompt(row, mode=0, CoT=False, calibration=False):
+    if calibration:
+        df
     if mode==0:
         persian_number ={
         '1': '۱', '2': '۲', '3': '۳', '4': '۴'
@@ -93,3 +95,10 @@ def generate_prompt(row, mode=0, CoT=False, just_calibration=False, df_context=N
         if CoT:
             prompt+=" بیایید قدم به قدم فکر کنیم"
     return prompt
+
+
+import pandas as pd
+
+df = pd.read_csv('MPLU_text.csv')
+
+generate_prompt(df, calibration=True)

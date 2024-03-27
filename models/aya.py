@@ -7,7 +7,7 @@ import json
 from prompt import *
 
 
-def eval_aya(df, prompt_type=0, load_cache=False):
+def eval_aya(df, prompt_type=0, load_cache=False, run_calibration=False):
     if not load_cache:
         checkpoint = "CohereForAI/aya-101"
         tokenizer = AutoTokenizer.from_pretrained(checkpoint)
@@ -27,7 +27,7 @@ def eval_aya(df, prompt_type=0, load_cache=False):
             results.append([prompt, outputs, i['ID'], f"{cache}/aya_{prompt_type}_{i['ID']}_prob.json", 'aya-101'])
 
         elif not load_cache:
-            prompt = generate_prompt(i)
+            prompt = generate_prompt(i, prompt_type=prompt_type, calibration=run_calibration)
 
             inputs = tokenizer.encode(prompt, return_tensors="pt")
             inputs = inputs.to('cuda')
