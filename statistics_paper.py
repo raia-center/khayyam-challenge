@@ -36,7 +36,7 @@ def option_table():
         if 'csv' in i:
             df = pd.read_csv(os.path.join('cache', i))
             df = pd.merge(data_df, df, on=['ID'], how='inner', suffixes=('', '_'+i))
-            if i=='gpt4_0.csv' or i=='gpt35_0.csv':
+            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='haiku_0.csv':
                 cols = ['regex', 'regex_post']
             elif 'random' in i:
                 cols = ['regex']
@@ -67,28 +67,28 @@ def option_table():
 
 
 def create_table(data_df, human_df, fields, file_name, folder='res2', just_regex=False):
-    df = pd.merge(data_df, human_df, on=['ID'], how='inner')
-    y_true = df.groupby(fields)['Key'].apply(list).to_dict()
-    y_pred = df.groupby(fields)['human_answer'].apply(list).to_dict()
-    name1 = []
-    name2 = []
-    acc = []
+    # df = pd.merge(data_df, human_df, on=['ID'], how='inner')
+    # y_true = df.groupby(fields)['Key'].apply(list).to_dict()
+    # y_pred = df.groupby(fields)['human_answer'].apply(list).to_dict()
+    # name1 = []
+    # name2 = []
+    # acc = []
 
-    for j in y_true.keys():
-        name1.append(j[0])
-        name2.append(j[1])
+    # for j in y_true.keys():
+    #     name1.append(j[0])
+    #     name2.append(j[1])
 
-        acc.append(accuracy_score(y_true[j], y_pred[j]))
+    #     acc.append(accuracy_score(y_true[j], y_pred[j]))
         
-    name1.append('Avg on all tasks')
-    name2.append('Avg on all tasks')
-    acc.append(np.mean(np.array(acc)))
+    # name1.append('Avg on all tasks')
+    # name2.append('Avg on all tasks')
+    # acc.append(np.mean(np.array(acc)))
         
-    name1.append('Avg on all questions')
-    name2.append('Avg on all questions')
-    acc.append(accuracy_score(list(df['Key']), list(df['human_answer'])))
+    # name1.append('Avg on all questions')
+    # name2.append('Avg on all questions')
+    # acc.append(accuracy_score(list(df['Key']), list(df['human_answer'])))
 
-    human_acc = pd.DataFrame({'name1':name1, 'name2':name2, 'human':acc})
+    # human_acc = pd.DataFrame({'name1':name1, 'name2':name2, 'human':acc})
 
     dfs = []
 
@@ -138,7 +138,7 @@ def create_table(data_df, human_df, fields, file_name, folder='res2', just_regex
             df = pd.merge(data_df, df, on=['ID'], how='inner', suffixes=('', '_'+i))
             y_true = df.groupby(fields)['Key'].apply(list).to_dict()
             
-            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv':
+            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv' or i=='haiku_0.csv':
                 y_pred = df.groupby(fields)['regex_post'].apply(list).to_dict()
             else:
                 y_pred = df.groupby(fields)['prob_ans'].apply(list).to_dict()
@@ -157,7 +157,7 @@ def create_table(data_df, human_df, fields, file_name, folder='res2', just_regex
                 
             name1.append('Avg on all questions')
             name2.append('Avg on all questions')
-            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv':
+            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv' or i=='haiku_0.csv':
                 acc.append(accuracy_score(list(df['Key']), list(df['regex_post'])))
             else:
                 acc.append(accuracy_score(list(df['Key']), list(df['prob_ans'])))
@@ -184,7 +184,7 @@ def create_table(data_df, human_df, fields, file_name, folder='res2', just_regex
             
             y_true = df.groupby(fields)['Key'].apply(list).to_dict()
             
-            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv':
+            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv' or i=='haiku_0.csv':
                 y_pred = df.groupby(fields)['regex_post'].apply(list).to_dict()
             else:
                 y_pred = df.groupby(fields)['full_prob_ans'].apply(list).to_dict()
@@ -205,7 +205,7 @@ def create_table(data_df, human_df, fields, file_name, folder='res2', just_regex
             name1.append('Avg on all questions')
             name2.append('Avg on all questions')
             
-            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv':
+            if i=='gpt4_0.csv' or i=='gpt35_0.csv' or i=='random_0.csv' or i=='haiku_0.csv':
                 acc.append(accuracy_score(list(df['Key']), list(df['regex_post'])))
             else:
                 acc.append(accuracy_score(list(df['Key']), list(df['full_prob_ans'])))

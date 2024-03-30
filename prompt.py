@@ -1,5 +1,6 @@
 import random
 import string
+from all_dict import *
 
 def random_str():
   characters = string.ascii_letters + string.digits
@@ -29,9 +30,8 @@ def generate_prompt(row, mode=0, CoT=False):
         prompt+="\n" + persian_number['4'] + ") " +str(row["Choice 4"])
         prompt+="\nجواب: "
         if CoT:
-            prompt+=" بیایید قدم به قدم فکر کنیم"
+            prompt+="بیایید قدم به قدم فکر کنیم "
     elif mode==1:
-        pass
         # persian instruction
         # aAn5Uhe
         list_index=[]
@@ -73,14 +73,21 @@ def generate_prompt(row, mode=0, CoT=False):
         prompt+="\n" + char_map['4'] + ". " +str(row["Choice 4"])
         prompt+="\nجواب: "
         if CoT:
-            prompt+=" بیایید قدم به قدم فکر کنیم"
+            prompt+="بیایید قدم به قدم فکر کنیم "
+            
     elif mode==3:
         char_map ={
         '1': 'a', '2': 'b', '3': 'c', '4': 'd'
         }
 
+        edu_lvl_map = {'LPS': 'Lower Primary School', 'UPS': 'Upper Primary School', 'LSS': 'Lower Secondary School', 'USS': 'Upper Secondary School'}
+
+        topic = str(final_category_en[row['final_category_fa']])
+
         prompt="The following are multiple choice questions (with answer) about " + \
-        str(row['final_category_fa']) + \
+        str(edu_lvl_map[topic[-3:]]) + \
+        ' ' + \
+        topic[:-4] + \
         "." + \
         "\nسوال: "+ \
         str(row["Question Body"]) +\
@@ -90,13 +97,4 @@ def generate_prompt(row, mode=0, CoT=False):
         prompt+="\n" + char_map['3'] + ". " +str(row["Choice 3"])
         prompt+="\n" + char_map['4'] + ". " +str(row["Choice 4"])
         prompt+="\nجواب: "
-        if CoT:
-            prompt+=" بیایید قدم به قدم فکر کنیم"
     return prompt
-
-
-import pandas as pd
-
-df = pd.read_csv('MPLU_text.csv')
-
-generate_prompt(df, calibration=True)

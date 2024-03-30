@@ -1,14 +1,12 @@
 import re
 import numpy as np
-from sklearn.metrics import accuracy_score
 from all_dict import *
 import random
 from tqdm import tqdm
 import pandas as pd
 import os
-import requests
-import time
-	
+
+
 
 def extract_number(num, prompt_type=0):
     if prompt_type==0:
@@ -20,15 +18,15 @@ def extract_number(num, prompt_type=0):
             return 3
         elif '4' in num or '۴' in num:
             return 4
-    # if prompt_type==2 or prompt_type==3:
-    #     if 'a' in num:
-    #         return 1
-    #     elif 'b' in num:
-    #         return 2
-    #     elif 'c' in num:
-    #         return 3
-    #     elif 'd' in num:
-    #         return 4
+    if prompt_type==2 or prompt_type==3:
+        if 'a' in num:
+            return 1
+        elif 'b' in num:
+            return 2
+        elif 'c' in num:
+            return 3
+        elif 'd' in num:
+            return 4
     
 def extract_regex_option_persianmind(row):
     if row['response_str']!=row['response_str']:
@@ -130,6 +128,55 @@ def extract_regex_option_mgpt(row):
     else:
         return random.choice([1, 2, 3, 4])
     
+def extract_regex_option_haiku(row, prompt_type=0, mode='regex'):
+    if prompt_type==0:
+        if row['response_str']!=row['response_str']:
+            return random.choice([1, 2, 3, 4])
+        pattern1 = r'گزینه[\s]*۱|گزینه[\s]*1|گزینه[\s]*۲|گزینه[\s]*2|گزینه[\s]*۳|گزینه[\s]*3|گزینه[\s]*۴|گزینه[\s]*4'
+        pattern2 = r'1[\s]*\)|۱[\s]*\)|2[\s]*\)|۲[\s]*\)|3[\s]*\)|۳[\s]*\)|4[\s]*\)|۴[\s]*\)'
+        pattern3 = r'جواب:[\s]*گزینه[\s]*1|جواب:[\s]*گزینه[\s]*2|جواب:[\s]*گزینه[\s]*3|جواب:[\s]*گزینه[\s]*4|جواب:[\s]*گزینه[\s]*۱|جواب:[\s]*گزینه[\s]*۲|جواب:[\s]*گزینه[\s]*۳|جواب:[\s]*گزینه[\s]*۴'
+        pattern4 = r'پاسخ[\s]*صحیح[\s]*گزینه[\s]*1|پاسخ[\s]*صحیح[\s]*گزینه[\s]*2|پاسخ[\s]*صحیح[\s]*گزینه[\s]*3|پاسخ[\s]*صحیح[\s]*گزینه[\s]*4|پاسخ[\s]*صحیح[\s]*گزینه[\s]*۱|پاسخ[\s]*صحیح[\s]*گزینه[\s]*۲|پاسخ[\s]*صحیح[\s]*گزینه[\s]*۳|پاسخ[\s]*صحیح[\s]*گزینه[\s]*۴'
+        pattern5 = r'جواب[\s]*صحیح[\s]*گزینه[\s]*1|جواب[\s]*صحیح[\s]*گزینه[\s]*2|جواب[\s]*صحیح[\s]*گزینه[\s]*3|جواب[\s]*صحیح[\s]*گزینه[\s]*4|جواب[\s]*صحیح[\s]*گزینه[\s]*۱|جواب[\s]*صحیح[\s]*گزینه[\s]*۲|جواب[\s]*صحیح[\s]*گزینه[\s]*۳|جواب[\s]*صحیح[\s]*گزینه[\s]*۴'
+        pattern6 = r'پاسخ[\s]*گزینه[\s]*1[\s]*است|پاسخ[\s]*گزینه[\s]*2[\s]*است|پاسخ[\s]*گزینه[\s]*3[\s]*است|پاسخ[\s]*گزینه[\s]*4[\s]*است|پاسخ[\s]*گزینه[\s]*۱[\s]*است|پاسخ[\s]*گزینه[\s]*۲[\s]*است|پاسخ[\s]*گزینه[\s]*۳[\s]*است|پاسخ[\s]*گزینه[\s]*۴[\s]*است'
+        pattern7 = r'پاسخ:[\s]*گزینه[\s]*1|پاسخ:[\s]*گزینه[\s]*2|پاسخ:[\s]*گزینه[\s]*3|پاسخ:[\s]*گزینه[\s]*4|پاسخ:[\s]*گزینه[\s]*۱|پاسخ:[\s]*گزینه[\s]*۲|پاسخ:[\s]*گزینه[\s]*۳|پاسخ:[\s]*گزینه[\s]*۴'
+        pattern8 = r'گزینه[\s]*1[\s]*صحیح[\s]*است|گزینه[\s]*2[\s]*صحیح[\s]*است|گزینه[\s]*3[\s]*صحیح[\s]*است|گزینه[\s]*4[\s]*صحیح[\s]*است|گزینه[\s]*۱[\s]*صحیح[\s]*است|گزینه[\s]*۲[\s]*صحیح[\s]*است|گزینه[\s]*۳[\s]*صحیح[\s]*است|گزینه[\s]*۴[\s]*صحیح[\s]*است'
+
+        pattern1_match = re.findall(pattern1, row['response_str'])
+        pattern2_match = re.findall(pattern2, row['response_str'])
+        pattern3_match = re.findall(pattern3, row['response_str'])
+        pattern4_match = re.findall(pattern4, row['response_str'])
+        pattern5_match = re.findall(pattern5, row['response_str'])
+        pattern6_match = re.findall(pattern6, row['response_str'])
+        pattern7_match = re.findall(pattern7, row['response_str'])
+        pattern8_match = re.findall(pattern8, row['response_str'])
+        
+        if len(pattern3_match)>0:
+            return extract_number(pattern3_match[0])
+        if len(pattern4_match)>0:
+            return extract_number(pattern4_match[0])
+        if len(pattern5_match)>0:
+            return extract_number(pattern5_match[0])
+        if len(pattern6_match)>0:
+            return extract_number(pattern6_match[0])
+        if len(pattern7_match)>0:
+            return extract_number(pattern7_match[0])
+        if len(pattern8_match)>0:
+            return extract_number(pattern8_match[0])
+        
+        if len(pattern1_match)>1:
+            if len(set([extract_number(i) for i in pattern1_match]))==1:
+                return extract_number(pattern1_match[0])
+            return -1
+        elif len(pattern1_match)==1:
+            return extract_number(pattern1_match[0])
+        elif len(pattern2_match)>1:
+            if len(set([extract_number(i) for i in pattern2_match]))==1:
+                return extract_number(pattern2_match[0])
+            return -1
+        elif len(pattern2_match)==1:
+            return extract_number(pattern2_match[0])
+        else:
+            return -1
 
 def extract_option(row, prompt_type=0, mode='regex'):
     if mode=='regex':
@@ -189,6 +236,10 @@ for i in tqdm(os.listdir('cache')):
         elif 'mgpt' in i:
             df = pd.read_csv(os.path.join('cache', i))
             df['regex'] = df.apply(extract_regex_option_mgpt, axis=1)
+            df.to_csv(os.path.join('cache', i), index=False)
+        elif 'haiku' in i:
+            df = pd.read_csv(os.path.join('cache', i))
+            df['regex'] = df.apply(extract_regex_option_haiku, axis=1)
             df.to_csv(os.path.join('cache', i), index=False)
         else:
             df = pd.read_csv(os.path.join('cache', i))
@@ -341,4 +392,3 @@ def human_eval(i):
     
 data_df['human_answer'] = data_df.apply(human_eval, axis=1)
 data_df[data_df['human_answer']!=-1.0][['ID','human_answer']].to_csv('human_eval.csv')
-        
