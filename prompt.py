@@ -11,9 +11,7 @@ def random_str():
 def create_choices(list_):
     return list_[0]+", "+list_[1]+", "+list_[2]+", "+list_[3]
 
-def generate_prompt(row, mode=0, CoT=False, calibration=False):
-    if calibration:
-        df
+def generate_prompt(row, mode=0, CoT=False):
     if mode==0:
         persian_number ={
         '1': '۱', '2': '۲', '3': '۳', '4': '۴'

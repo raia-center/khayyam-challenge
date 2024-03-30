@@ -324,6 +324,8 @@ for i in tqdm(os.listdir('cache')):
             df = pd.read_csv(os.path.join('cache', i))
             df['full_prob_ans'] =  pd.merge(df, data_df, on=['ID'], how='inner', suffixes=('_'+i, '')).progress_apply(extract_full_prob_option, axis=1, tokenizer=tokenizer)
             df.to_csv(os.path.join('cache', i), index=False)
+            
+            
 data_df = pd.read_csv('MPLU_text.csv')
 
 key_map = {'1':'P1', '2':'P2', '3':'P3', '4':'P4'}
