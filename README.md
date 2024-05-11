@@ -17,9 +17,13 @@ Researchers are obligated to adhere to these conditions. The utilization of the 
 If you use the ParsiMMLU dataset in your research work, please cite the following paper:
 
 Title: "Khayyam Challenge (PersianMMLU): Is Your LLM Truly Wise to The Persian Language?"
+
 Authors: Omid Ghahroodi, Marzia Nouri, Mohammad Vali Sanian, Alireza Sahebi, Doratossadat Dastgheib, Ehsaneddin Asgari, Mahdieh Soleymani Baghshah, Mohammad Hossein Rohban
+
 Publication: arXiv preprint arXiv:2404.06644 (2024)
+
 Joint Last/Corresponding Authorship: Marzia Nouri, Mohammad Vali Sanian, Alireza Sahebi
+
 ^ Joint Second Authorship : Ehsaneddin Asgari, Mahdieh Soleymani Baghshah, Mohammad Hossein Rohban
 
 # Additional Resources:
